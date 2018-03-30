@@ -1,0 +1,15 @@
+HTTP/1.1 200 OK
+Connection: close
+Etag: 0d8c8d20-2e04-cafd-c3b3-b2c432ab6a1c
+Last-Modified: Fri, 04 Dec 2015 23:45:09 GMT
+access-control-allow-origin: *
+Durability-Level: 2
+Content-Length: 17
+Content-MD5: +8JLzHoXlHWPwTJ/z+va9g==
+Content-Type: application/json
+Date: Fri, 30 Mar 2018 23:19:08 GMT
+Server: Manta
+x-request-id: beeb18e0-3470-11e8-9bf7-e963a35e6720
+x-response-time: 222
+x-server-name: 1a1ff4e5-4e04-4e60-b993-689f95b67e89
+

@@ -1,0 +1,195 @@
+#!/usr/bin/env node
+
+/*
+ * httpmd5: convert back and forth between md5sums used in HTTP (which are
+ * base64-encoded representations of the underlying bits) and those reported by
+ * the md5(1) command (which are hex representations of the underlying bits).
+ * See README.md for details.
+ */
+
+var mod_assertplus = require('assert-plus');
+var mod_cmdutil = require('cmdutil');
+var VError = require('verror');
+
+/*
+ * Buffer at most 16K of data.  This covers the case of reading HTTP headers on
+ * stdin.  While we can in principle get more than 16K, this is impractical in
+ * many real-world servers anyway, so we figure 16K should be enough to cover
+ * the cases that we care about.
+ */
+var maxbuffer = 16 * 1024;
+
+function main()
+{
+	mod_cmdutil.exitOnEpipe();
+	mod_cmdutil.configure({
+	    'synopses': [ '' ],
+	    'usageMessage': 'Convert between md5sum representations used in ' +
+	        'HTTP and those produced by \nopenssl tools.'
+	});
+
+	if (process.argv.length != 2) {
+		mod_cmdutil.usage();
+	}
+
+	if (process.stdin.isTTY) {
+		mod_cmdutil.warn('reading from stdin');
+	}
+
+	readInput({
+	    'maxBuffer': maxbuffer,
+	    'stream': process.stdin
+	}, onInputReady);
+}
+
+/*
+ * Named arguments in "args":
+ *
+ *     stream    	Readable stream
+ *
+ *     maxBuffer	maximum bytes of input to buffer
+ *
+ * "callback" is invoked upon completion as "callback(str, truncated)".
+ * "str" is the UTF-8 string representation of the bytes read from the stream.
+ * If "str" is truncated because more than "maxBuffer" bytes would have to have
+ * been read, then "truncated" will be true.
+ */
+function readInput(args, callback)
+{
+	var stream, maxbytes;
+	var input, gotbytes;
+
+	mod_assertplus.object(args, 'args');
+	mod_assertplus.number(args.maxBuffer, 'args.maxBuffer');
+	mod_assertplus.object(args.stream, 'args.stream');
+	mod_assertplus.func(callback, 'callback');
+
+	stream = args.stream;
+	maxbytes = args.maxBuffer;
+	input = new Buffer(maxbytes);
+	gotbytes = 0;
+
+	stream.on('data', function (chunk) {
+		var copybytes;
+
+		mod_assertplus.ok(chunk instanceof Buffer);
+		mod_assertplus.notEqual('string', typeof (chunk));
+		mod_assertplus.strictEqual(input.length, maxbytes);
+		mod_assertplus.ok(gotbytes <= input.length);
+
+		if (gotbytes == input.length) {
+			/*
+			 * If this function is factored out for use elsewhere,
+			 * we should remove this listener rather than skipping
+			 * this case.
+			 */
+			return;
+		}
+
+		copybytes = Math.max(0, Math.min(
+		    input.length - gotbytes, chunk.length));
+		chunk.copy(input, gotbytes, 0, copybytes);
+		gotbytes += copybytes;
+		mod_assertplus.ok(gotbytes <= input.length);
+		if (gotbytes == input.length) {
+			/*
+			 * TODO It seems like this could do the wrong thing (or
+			 * fail badly?) if the input buffer ends with a
+			 * non-final byte of a multi-byte character.
+			 */
+			callback(input.toString('utf8', 0, gotbytes), true);
+			return;
+		}
+	});
+
+	stream.on('end', function () {
+		if (gotbytes == input.length) {
+			/* See above. */
+			return;
+		}
+
+		/* See above. */
+		callback(input.toString('utf8', 0, gotbytes), false);
+	});
+}
+
+/*
+ * Invoked once we've read all of our input to actually process it.
+ */
+function onInputReady(data, truncated)
+{
+	var lines, strinput;
+	var line, i, c;
+	var forceb64 = false;
+	var found = false;
+
+	lines = data.trim().split(/\r?\n/);
+	if (lines.length > 1) {
+		/*
+		 * TODO This could be made to handle HTTP requests, too (instead
+		 * of just responses).
+		 */
+		if (!/^HTTP\/1/.test(lines[0])) {
+			mod_cmdutil.fail('expected "HTTP/1" at the start of ' +
+			    'multi-line input (found %s)',
+			    JSON.stringify(lines[0]));
+		}
+
+		found = false;
+		for (i = 0; i < lines.length; i++) {
+			if (/^content-md5:/i.test(lines[i])) {
+				found = true;
+				break;
+			}
+
+			if (lines[i].trim().length === 0) {
+				break;
+			}
+		}
+
+		if (!found) {
+			mod_cmdutil.fail('found no "content-md5" header line ' +
+			    'for multi-line input%s', truncated ?
+			    ' (note: stopped reading after ' + maxbuffer +
+			    ' bytes)' : '');
+		}
+
+		c = lines[i].indexOf(':');
+		mod_assertplus.notEqual(c, -1);
+		strinput = lines[i].substr(c + 1).trim();
+		forceb64 = true;
+	} else {
+		mod_assertplus.strictEqual(lines.length, 1);
+		if (/^content-md5:/i.test(lines[0])) {
+			c = lines[0].indexOf(':');
+			mod_assertplus.notEqual(c, -1);
+			strinput = lines[0].substr(c + 1).trim();
+			forceb64 = true;
+		} else {
+			strinput = lines[0].trim();
+		}
+	}
+
+	processString(strinput, forceb64);
+}
+
+/*
+ * Given a string input (already extracted as documented above), determine
+ * whether it's in hex or base64 encoding, parse it, and print its
+ * representation in both encodings.
+ */
+function processString(strinput, forceb64)
+{
+	var buf, encoding;
+
+	encoding = forceb64 || !/^[a-zA-Z0-9]{32}$/.test(strinput) ?
+	    'base64' : 'hex';
+	buf = new Buffer(strinput, encoding);
+
+	console.log('input string:   %s', strinput);
+	console.log('input encoding: %s', encoding);
+	console.log('base64-encoded: %s', buf.toString('base64'));
+	console.log('hex-encoded:    %s', buf.toString('hex'));
+}
+
+main()

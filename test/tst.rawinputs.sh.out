@@ -1,0 +1,66 @@
+test case: raw input file input.success.b64_no_newline
+input string:   +8JLzHoXlHWPwTJ/z+va9g==
+input encoding: base64
+base64-encoded: +8JLzHoXlHWPwTJ/z+va9g==
+hex-encoded:    fbc24bcc7a1794758fc1327fcfebdaf6
+
+test case: raw input file input.success.b64_with_newline
+input string:   +8JLzHoXlHWPwTJ/z+va9g==
+input encoding: base64
+base64-encoded: +8JLzHoXlHWPwTJ/z+va9g==
+hex-encoded:    fbc24bcc7a1794758fc1327fcfebdaf6
+
+test case: raw input file input.success.content_md5
+input string:   +8JLzHoXlHWPwTJ/z+va9g==
+input encoding: base64
+base64-encoded: +8JLzHoXlHWPwTJ/z+va9g==
+hex-encoded:    fbc24bcc7a1794758fc1327fcfebdaf6
+
+test case: raw input file input.success.headers_only
+input string:   +8JLzHoXlHWPwTJ/z+va9g==
+input encoding: base64
+base64-encoded: +8JLzHoXlHWPwTJ/z+va9g==
+hex-encoded:    fbc24bcc7a1794758fc1327fcfebdaf6
+
+test case: raw input file input.success.hex_no_newline
+input string:   fbc24bcc7a1794758fc1327fcfebdaf6
+input encoding: hex
+base64-encoded: +8JLzHoXlHWPwTJ/z+va9g==
+hex-encoded:    fbc24bcc7a1794758fc1327fcfebdaf6
+
+test case: raw input file input.success.hex_with_newline
+input string:   fbc24bcc7a1794758fc1327fcfebdaf6
+input encoding: hex
+base64-encoded: +8JLzHoXlHWPwTJ/z+va9g==
+hex-encoded:    fbc24bcc7a1794758fc1327fcfebdaf6
+
+test case: raw input file input.success.minfo_headers
+input string:   +8JLzHoXlHWPwTJ/z+va9g==
+input encoding: base64
+base64-encoded: +8JLzHoXlHWPwTJ/z+va9g==
+hex-encoded:    fbc24bcc7a1794758fc1327fcfebdaf6
+
+test case: raw input file input.success.response
+input string:   +8JLzHoXlHWPwTJ/z+va9g==
+input encoding: base64
+base64-encoded: +8JLzHoXlHWPwTJ/z+va9g==
+hex-encoded:    fbc24bcc7a1794758fc1327fcfebdaf6
+
+test case: raw input file input.failure.badhttp
+httpmd5: expected "HTTP/1" at the start of multi-line input (found "Connection: close")
+
+test case: raw input file input.failure.response_nomd5
+httpmd5: found no "content-md5" header line for multi-line input
+
+test case: raw input file input.failure.response_nomd5_body
+httpmd5: found no "content-md5" header line for multi-line input
+
+test case: raw input file input.failure.toolong
+httpmd5: found no "content-md5" header line for multi-line input (note: stopped reading after 16384 bytes)
+
+test case: unexpected arguments
+usage: httpmd5 
+Convert between md5sum representations used in HTTP and those produced by 
+openssl tools.
+
+all test cases run

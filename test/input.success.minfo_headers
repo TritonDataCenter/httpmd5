@@ -1,0 +1,17 @@
+HTTP/1.1 200 OK
+etag: 0d8c8d20-2e04-cafd-c3b3-b2c432ab6a1c
+last-modified: Fri, 04 Dec 2015 23:45:09 GMT
+access-control-allow-origin: *
+durability-level: 2
+content-length: 17
+content-md5: +8JLzHoXlHWPwTJ/z+va9g==
+content-type: application/json
+date: Fri, 30 Mar 2018 23:36:25 GMT
+server: Manta
+x-request-id: 048a2f0f-b822-4935-80d6-e17d7bd2d947
+x-response-time: 256
+x-server-name: c84b3cab-1c20-4566-a880-0e202b6b63dd
+connection: keep-alive
+x-request-received: 1522452984674
+x-request-processing-time: 616
+

@@ -1,0 +1,15 @@
+{
+	"name": "http2md5",
+	"version": "1.0.0",
+	"description": "convert between md5sum representations",
+	"bin": {
+		"httpmd5": "./bin/httpmd5"
+	},
+	"dependencies": {
+		"assert-plus": "^1.0.0",
+		"cmdutil": "^1.1.0",
+		"verror": "^1.10.0"
+	},
+	"author": "David Pacheco <dap@joyent.com>",
+	"license": "MIT"
+}
