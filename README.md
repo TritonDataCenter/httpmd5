@@ -33,6 +33,10 @@ Currently, `httpmd5` attempts to determine the input type as follows:
   the string is hex-encoded.  Otherwise, we assume that it's base64-encoded.
 
 
+## Installation
+
+    npm install -g httpmd5
+
 ## Examples
 
 Suppose we have an HTTP resource whose HEAD response looks like this:

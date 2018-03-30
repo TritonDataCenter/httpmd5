@@ -1,5 +1,5 @@
 {
-	"name": "http2md5",
+	"name": "httpmd5",
 	"version": "1.0.0",
 	"description": "convert between md5sum representations",
 	"bin": {
