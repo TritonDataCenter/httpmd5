@@ -25,6 +25,7 @@ JSL_CONF_NODE	 = jsl.node.conf
 .PHONY: all
 all:
 	$(NPM) install
+CLEAN_FILES += node_modules
 
 .PHONY: test
 test: $(CATEST)
