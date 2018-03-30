@@ -119,7 +119,7 @@ function readInput(args, callback)
 function onInputReady(data, truncated)
 {
 	var lines, strinput;
-	var line, i, c;
+	var i, c;
 	var forceb64 = false;
 	var found = false;
 
@@ -192,4 +192,4 @@ function processString(strinput, forceb64)
 	console.log('hex-encoded:    %s', buf.toString('hex'));
 }
 
-main()
+main();
